@@ -1,0 +1,23 @@
+.chart {
+    background: #eee;
+}
+
+.tick text {
+    fill: #666;
+}
+
+.error-text {
+    fill: #c66;
+}
+
+.loading-text {
+    fill: #999;
+}
+
+.line-chart .y-grid path {
+    display: none;
+}
+
+.line-chart .y-grid line {
+    stroke: #ccc;
+}
