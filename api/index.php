@@ -123,6 +123,14 @@ if(isset($_GET["stats"])){
     }
 
     $result = $db->query($query);
+    if(!$result){
+        echo json_encode(array(
+            'key' => array(),
+            'data' => array(),
+            'error_msg'=>'Error: '.$db->error
+        ));
+        exit();
+    }
     $data = array();
     $key = array();
     if($stats_info['generate_mode'] == "line"){
