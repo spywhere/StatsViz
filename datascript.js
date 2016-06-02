@@ -1,6 +1,6 @@
 (function(window, undefined){
     "use strict";
-    var api_host = "/api";
+    var api_host = "api/";
 
     var colors = d3.scale.category20c();
     var tweenDuration = 500;

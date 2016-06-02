@@ -2,7 +2,7 @@
 
 function determine_request(){
     // If the request contains "version", use "stats" model.
-    if(isset($_GET["version"])){
+    if(isset($_GET["Product"])){
         return "stats";
     }
     return NULL;
@@ -61,7 +61,6 @@ function get_models($model_name){
                 'Geography' => array(
                     'name' => 'Geography',
                     'pattern' => 'asia|america|europe',
-                    'reverse_order' => true,
                     'max' => 10
                 ),
                 'IsDebug' => array(

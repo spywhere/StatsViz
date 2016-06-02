@@ -6,6 +6,8 @@ $data = array();
 $result = null;
 
 function collect_stats($model_name){
+    global $db;
+    
     $model = get_models($model_name);
     if(!$model){
         $db->close();

@@ -1,6 +1,6 @@
 (function(window, undefined){
     "use strict";
-    var api_host = "/api";
+    var api_host = "api/";
     
     var currentFilter = {};
     var sortType = undefined;
