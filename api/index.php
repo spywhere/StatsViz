@@ -225,7 +225,7 @@ if(isset($_GET["database"])){
             $field_codes[] = $last_field_code;
             $table_code .= "\n".implode(",\n", $field_codes)."\n";
         }
-        $table_code .= ");";
+        $table_code .= ") COLLATE ".$table_collation.";";
 
         $db->query($table_code);
 
