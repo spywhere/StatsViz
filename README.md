@@ -72,6 +72,8 @@ returns a table schema which consists of the following structure...
 name and its value is a field structure as follows...
   - `name` A name in which the request must send as (all spaces will be
   trimmed).
+  - `alias` An array of names which will use as an alias to name (no space will
+  be trimmed).
   - `skip` A boolean specify if the filter will be hidden or not.
   - `key` A boolean specify if the field will be use as a primary key.
   - `pattern` A regular expression to validate the value (this will reject the

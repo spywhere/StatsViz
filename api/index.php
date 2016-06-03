@@ -24,7 +24,6 @@ function collect_stats($model_name){
     $values = array();
     $bindset = "";
     foreach ($model["schema"] as $field => $field_info) {
-        $flatten_field = implode("", explode(" ", $field_info["name"]));
         if(array_key_exists("skip", $field_info) && $field_info["skip"]){
             continue;
         }
@@ -39,10 +38,21 @@ function collect_stats($model_name){
 
         $key_name = "";
 
+        $flatten_field = implode("", explode(" ", $field_info["name"]));
         if(isset($_GET[$flatten_field])){
             $key_name = $flatten_field;
         }else if(isset($_GET[strtolower($flatten_field)])){
             $key_name = strtolower($flatten_field);
+        }else{
+            foreach ($field_info["alias"] as $alias) {
+                if(isset($_GET[$alias])){
+                    $key_name = $alias;
+                    break;
+                }else if(isset($_GET[strtolower($alias)])){
+                    $key_name = strtolower($alias);
+                    break;
+                }
+            }
         }
 
         if($key_name == ""){
