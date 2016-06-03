@@ -41,16 +41,19 @@ function collect_stats($model_name){
 
         if(isset($_GET[$flatten_field])){
             $key_name = $flatten_field;
+        }else if(isset($_GET[strtolower($flatten_field)])){
+            $key_name = strtolower($flatten_field);
         }
 
         if($key_name == ""){
             $db->close();
             die("Field \"".$field_info["name"]."\" is required");
-        }else if(array_key_exists("pattern", $field_info)){
-            if(!preg_match("/".$field_info["pattern"]."/u", $_GET[$key_name])){
-                $db->close();
-                die("Field \"".$field_info["name"]."\" value is invalid");
-            }
+        }else if(
+            array_key_exists("pattern", $field_info) &&
+            !preg_match("/".$field_info["pattern"]."/u", $_GET[$key_name])
+        ){
+            $db->close();
+            die("Field \"".$field_info["name"]."\" value is invalid");
         }
 
         $bindset[] = "s";
