@@ -53,8 +53,15 @@ visualization require fields
     - `type` A group name
     - `value` An arbitrary number for the chart (% will be automatically
     calculated)
+- `join` (optional) An object represents a table joining operation which
+consists of the following keys...
+  - `type` (optional) A joining type. One of `inner`, `outer`, `left` or
+  `right`.
+  - `table` A joining table name.
+  - `on` A joining relationship.
 - `where` (optional) An expression to filter the query as in SQL's `WHERE`.
-- `group` (optional) A field name to group the value together as in SQL's `GROUP BY`.
+- `group` (optional) A field name to group the value together as in SQL's
+`GROUP BY`.
 - `order` (optional) A field name to order the result as in SQL's `ORDER BY`.
 - `debug` (optional) A field name that identify if the record is for debug mode
 or not.

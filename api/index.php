@@ -114,6 +114,28 @@ if(isset($_GET["stats"])){
     $debug_mode = isset($_GET["debug"]);
 
     $query = "SELECT ".$stats_info['query']." FROM ".$stats_info['table'];
+    if(array_key_exists("join", $stats_info)){
+        if(!array_key_exists("table", $join_info)){
+            echo json_encode(array(
+                'key' => array(),
+                'data' => array(),
+                'error_msg'=>'Error: Missing join table'
+            ));
+            exit();
+        }else if(!array_key_exists("on", $join_info)){
+            echo json_encode(array(
+                'key' => array(),
+                'data' => array(),
+                'error_msg'=>'Error: Missing join relationship (\'on\' keyword)'
+            ));
+            exit();
+        }
+        $join_info = $stats_info['join'];
+        if(array_key_exists("type", $join_info)){
+            $query .= " ".$join_info['type'];
+        }
+        $query .= " JOIN ".$join_info['table']." ON ".$join_info['on'];
+    }
     if(array_key_exists("where", $stats_info) || array_key_exists("debug", $stats_info)){
         $query .= " WHERE ";
         $added = false;
