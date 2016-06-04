@@ -10,7 +10,10 @@
 
     function requestData(name, callback){
         if(name in data){
-            if("generate_mode" in data[name] && data[name].generate_mode == "pie"){
+            if(
+                "generate_mode" in data[name] && 
+                data[name].generate_mode === "pie"
+            ){
                 while(data[name].data.length >= 10){
                     data[name].data.shift();
                 }
@@ -32,7 +35,9 @@
                     data[name].key.push("Day " + (++data[name].last_date));
                     var key;
                     for(key in data[name].data){
-                        data[name].data[key].values.push({y:(1+Math.floor(Math.random()*49))});
+                        data[name].data[key].values.push({
+                            y: 1 + Math.floor(Math.random() * 49)
+                        });
                     }
                 }
             }
@@ -69,7 +74,11 @@
         var scaleLayer = chart.append("g").attr("class", "y-grid");
 
         function update(data){
-            var stack = d3.layout.stack().values(function(d){return d.values;});
+            var stack = d3.layout.stack().values(
+                function(d){
+                    return d.values;
+                }
+            );
             var layeredData = stack(data.data);
 
             var yMax = d3.max(layeredData, function(layer){
@@ -120,14 +129,24 @@
                 return;
             }
 
-            var typeLayers = chart.selectAll(".layer").data(layeredData, function(d){return d.type;});
+            var typeLayers = chart.selectAll(".layer").data(
+                layeredData, function(d){
+                    return d.type;
+                }
+            );
 
             typeLayers.enter().append("g")
-                .attr("class", function(d,i){return "layer " + data.data[i].type;})
+                .attr("class", function(d,i){
+                    return "layer " + data.data[i].type;
+                })
                 .attr("fill", function(d,i){return colors(i);})
                 .attr("height", chartHeight);
 
-            var rect = typeLayers.selectAll("rect").data(function(d,i){return data.data[i].values;});
+            var rect = typeLayers.selectAll("rect").data(
+                function(d, i){
+                    return data.data[i].values;
+                }
+            );
 
             rect.transition().duration(tweenDuration)
                 .attr("y", function(d){return yScale(d.y0+d.y);})
@@ -142,7 +161,11 @@
                 .attr("height", 0)
                 .transition().duration(tweenDuration)
                 .attr("x", function(d, i){return xScale(i);})
-                .transition().duration(tweenDuration).delay(function(d,i){return i*50;})
+                .transition().duration(tweenDuration).delay(
+                    function(d, i){
+                        return i*50;
+                    }
+                )
                 .attr("y", function(d){return yScale(d.y0+d.y);})
                 .attr("height", function(d){
                     return yScale(d.y0)-yScale(d.y0+d.y);
@@ -151,12 +174,20 @@
             rect.selectAll("title").remove();
             rect.append("title")
                 .text(function(d, i){
-                    var title = data.key[i] + "\n";
+                    var titles = [data.key[i]];
                     var key;
                     for(key=data.data.length-1;key>=0;key--){
-                        title += data.data[key]["type"] + ": " + ((data.data[key]["values"][i].y == undefined)?0:(data.data[key]["values"][i].y)) + "\n";
+                        if(data.data[key]["type"] === null){
+                            continue;
+                        }
+                        titles.push(
+                            data.data[key]["type"] + ": " + (
+                                (data.data[key]["values"][i].y === undefined) ?
+                                0 : data.data[key]["values"][i].y
+                            )
+                        );
                     }
-                    return title;
+                    return titles.join("\n");
                 });
 
             rect.exit()
@@ -208,10 +239,18 @@
         });
 
         var arcLayer = chart.append("g")
-            .attr("transform", "translate("+(chartWidthAb/2)+","+(chartHeight/2)+")");
+            .attr(
+                "transform",
+                "translate(" + (chartWidthAb / 2) + "," + (chartHeight / 2) +
+                ")"
+            );
 
         var labelLayer = chart.append("g")
-            .attr("transform", "translate("+(chartWidthAb/2)+","+(chartHeight/2)+")");
+            .attr(
+                "transform",
+                "translate(" + (chartWidthAb / 2) + "," + (chartHeight / 2) +
+                ")"
+            );
 
         var arc = d3.svg.arc()
             .startAngle(function(d){ return d.startAngle; })
@@ -237,7 +276,13 @@
                 s0 = 0;
                 e0 = 0;
             }
-            var i = d3.interpolate({startAngle: s0, endAngle: e0}, {startAngle: d.startAngle, endAngle: d.endAngle});
+            var i = d3.interpolate({
+                startAngle: s0,
+                endAngle: e0
+            }, {
+                startAngle: d.startAngle,
+                endAngle: d.endAngle
+            });
             return function(t) {
                 var b = i(t);
                 return arc(b);
@@ -247,7 +292,13 @@
         function removePieTween(d, i) {
             var s0 = 2 * Math.PI;
             var e0 = 2 * Math.PI;
-            var i = d3.interpolate({startAngle: d.startAngle, endAngle: d.endAngle}, {startAngle: s0, endAngle: e0});
+            var i = d3.interpolate({
+                startAngle: d.startAngle,
+                endAngle: d.endAngle
+            }, {
+                startAngle: s0,
+                endAngle: e0
+            });
             return function(t) {
                 var b = i(t);
                 return arc(b);
@@ -257,11 +308,20 @@
         function textTween(d, i) {
             var a;
             if(oldPieData[i]){
-                a = (oldPieData[i].startAngle + oldPieData[i].endAngle - Math.PI)/2;
+                a = (
+                    oldPieData[i].startAngle +
+                    oldPieData[i].endAngle - Math.PI
+                ) / 2;
             } else if (!(oldPieData[i]) && oldPieData[i-1]) {
-                a = (oldPieData[i-1].startAngle + oldPieData[i-1].endAngle - Math.PI)/2;
+                a = (
+                    oldPieData[i-1].startAngle +
+                    oldPieData[i-1].endAngle - Math.PI
+                ) / 2;
             } else if(!(oldPieData[i-1]) && oldPieData.length > 0) {
-                a = (oldPieData[oldPieData.length-1].startAngle + oldPieData[oldPieData.length-1].endAngle - Math.PI)/2;
+                a = (
+                    oldPieData[oldPieData.length-1].startAngle +
+                    oldPieData[oldPieData.length-1].endAngle - Math.PI
+                ) / 2;
             } else {
                 a = 0;
             }
@@ -270,7 +330,10 @@
             var fn = d3.interpolateNumber(a, b);
             return function(t) {
                 var val = fn(t);
-                return "translate(" + Math.cos(val) * (chartRadius+chartOffset) + "," + Math.sin(val) * (chartRadius+chartOffset) + ")";
+                return (
+                    "translate(" + Math.cos(val) * (chartRadius+chartOffset) +
+                    "," + Math.sin(val) * (chartRadius+chartOffset) + ")"
+                );
             };
         }
 
@@ -313,13 +376,17 @@
                 .attr("fill", function(d,i){return colors(i);})
                 .append("title")
                 .text(function(d){
-                    return d.data.type + ": " + rScale(d.value).toFixed(1) + "%";
+                    return (
+                        d.data.type + ": " + rScale(d.value).toFixed(1) + "%"
+                    );
                 });
             paths.transition().duration(tweenDuration)
                 .attrTween("d", pieTween)
                 .select("title")
                 .text(function(d){
-                    return d.data.type + ": " + rScale(d.value).toFixed(1) + "%";
+                    return (
+                        d.data.type + ": " + rScale(d.value).toFixed(1) + "%"
+                    );
                 });;
             paths.exit().transition().duration(tweenDuration)
                 .attrTween("d", removePieTween)
@@ -333,19 +400,28 @@
                 .attr("y2", -chartRadius - 8)
                 .attr("stroke", "gray")
                 .attr("transform", function(d){
-                    return "rotate(" + (d.startAngle+d.endAngle)/2 * (180/Math.PI) + ")";
+                    return (
+                        "rotate(" + (d.startAngle + d.endAngle) / 2 *
+                        (180 / Math.PI) + ")"
+                    );
                 })
                 .attr("stroke-opacity", 0);
             ticks.transition().duration(tweenDuration)
                 .attr("stroke-opacity", 1)
                 .attr("transform", function(d){
-                    return "rotate(" + (d.startAngle+d.endAngle)/2 * (180/Math.PI) + ")";
+                    return (
+                        "rotate(" + (d.startAngle + d.endAngle) / 2 *
+                        (180 / Math.PI) + ")"
+                    );
                 });
             ticks.exit().remove();
 
             var labels = labelLayer.selectAll("text.value").data(pieData)
                 .attr("dy", function(d){
-                    if((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ){
+                    if(
+                        (d.startAngle + d.endAngle) / 2 > Math.PI / 2 &&
+                        (d.startAngle + d.endAngle) / 2 < Math.PI * 1.5 
+                    ){
                         return 5;
                     }else{
                         return -7;
@@ -366,17 +442,26 @@
                 .attr("class", "value")
                 .attr("font-size", "10px")
                 .attr("transform", function(d){
-                    return "translate(" + Math.cos(((d.startAngle+d.endAngle - Math.PI)/2)) * (chartRadius+chartOffset) + "," + Math.sin((d.startAngle+d.endAngle - Math.PI)/2) * (chartRadius+chartOffset) + ")";
+                    return (
+                        "translate(" +
+                        Math.cos(((d.startAngle+d.endAngle - Math.PI)/2)) *
+                        (chartRadius+chartOffset) + "," +
+                        Math.sin((d.startAngle+d.endAngle - Math.PI)/2) *
+                        (chartRadius+chartOffset) + ")"
+                    );
                 })
                 .attr("dy", function(d){
-                    if((d.startAngle+d.endAngle)/2 > Math.PI/2 && (d.startAngle+d.endAngle)/2 < Math.PI*1.5 ){
+                    if(
+                        (d.startAngle + d.endAngle) / 2 > Math.PI / 2 &&
+                        (d.startAngle + d.endAngle) /  2 < Math.PI * 1.5
+                    ){
                         return 5;
                     }else{
                         return -7;
                     }
                 })
                 .attr("text-anchor", function(d){
-                    if((d.startAngle+d.endAngle)/2 < Math.PI){
+                    if((d.startAngle + d.endAngle) / 2 < Math.PI){
                         return "beginning";
                     }else{
                         return "end";
