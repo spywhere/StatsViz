@@ -114,6 +114,7 @@ if(isset($_GET["stats"])){
     $debug_mode = isset($_GET["debug"]);
 
     $query = "SELECT ".$stats_info['query']." FROM ".$stats_info['table'];
+    $skip_debug = false;
     if(array_key_exists("join", $stats_info)){
         $join_info = $stats_info['join'];
         if(!array_key_exists("table", $join_info)){
@@ -135,6 +136,10 @@ if(isset($_GET["stats"])){
             $query .= " ".$join_info['type'];
         }
         $query .= " JOIN ".$join_info['table']." ON ".$join_info['on'];
+        if(array_key_exists("debug", $stats_info)){
+            $skip_debug = true;
+            $query .= " AND ".$stats_info['debug']."='".(($debug_mode)?"true":"false")."'";
+        }
     }
     if(array_key_exists("where", $stats_info) || array_key_exists("debug", $stats_info)){
         $query .= " WHERE ";
@@ -143,7 +148,7 @@ if(isset($_GET["stats"])){
             $query .= $stats_info['where'];
             $added = true;
         }
-        if(array_key_exists("debug", $stats_info)){
+        if(array_key_exists("debug", $stats_info) && !$skip_debug){
             if($added){
                 $query .= " AND ";
             }
