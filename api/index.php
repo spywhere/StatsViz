@@ -115,6 +115,7 @@ if(isset($_GET["stats"])){
 
     $query = "SELECT ".$stats_info['query']." FROM ".$stats_info['table'];
     if(array_key_exists("join", $stats_info)){
+        $join_info = $stats_info['join'];
         if(!array_key_exists("table", $join_info)){
             echo json_encode(array(
                 'key' => array(),
@@ -130,7 +131,6 @@ if(isset($_GET["stats"])){
             ));
             exit();
         }
-        $join_info = $stats_info['join'];
         if(array_key_exists("type", $join_info)){
             $query .= " ".$join_info['type'];
         }
