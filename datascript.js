@@ -62,7 +62,9 @@
     }
 
     function createBarChart(chart, proportion){
-        console.log("line chart: " + chart.attr("name"));
+        console.log("bar chart: " + chart.attr("name") + (
+            proportion ? " [Proportion]" : ""
+        ));
 
         var jChart = $("[name='"+chart.attr("name")+"']");
         var chartWidthAb = parseInt(jChart.css("width"));
@@ -205,6 +207,131 @@
                 .attr("height", function(d, i){
                     return yScale(d.y0)-yScale(d.y0+d.y, i);
                 })
+                .remove();
+
+            yGrid.tickSize(-chartWidthAb, -chartWidthAb, 0);
+            scaleLayer.transition().call(yGrid);
+        }
+
+        setTimeout(function(){
+            requestData(chart.attr("name"), chartType, function(data){
+                update(data);
+            });
+        }, 500);
+        setInterval(function(){
+            requestData(chart.attr("name"), chartType, function(data){
+                update(data);
+            });
+        }, updateInterval);
+    }
+
+    function createLineChart(chart, proportion){
+        console.log("line chart: " + chart.attr("name") + (
+            proportion ? " [Proportion]" : ""
+        ));
+
+        var jChart = $("[name='"+chart.attr("name")+"']");
+        var chartWidthAb = parseInt(jChart.css("width"));
+        var chartHeight = parseInt(jChart.css("height"));
+        var chartOffset = 30;
+        var chartType = proportion ? "proportion" : null;
+
+        chart.append("text")
+            .attr("class", "loading-text")
+            .attr("text-anchor", "middle")
+            .attr("x", "50%")
+            .attr("y", "50%")
+            .attr("font-size", "25")
+            .text("Loading");
+
+        var scaleLayer = chart.append("g").attr("class", "y-grid");
+
+        function update(data){
+            var yMax = d3.max(data.data, function(layer){
+                return d3.max(layer.values, function(d){return d.y;});
+            });
+
+            if(yMax < 2){
+                yMax = 2;
+            }
+
+            var yScale = d3.scale.linear()
+                .domain([0, yMax])
+                .range([chartHeight, 0]);
+
+            var yGrid = d3.svg.axis()
+                .scale(yScale)
+                .ticks(4)
+                .orient("left")
+                .tickSize(-chartWidthAb, -chartWidthAb, 0)
+                .tickSubdivide(1)
+                .tickPadding(-25)
+                .tickFormat(function(d){return d;});
+
+            var xScale = d3.scale.ordinal()
+                .domain(d3.range(data.key.length))
+                .rangeRoundBands([chartOffset, chartWidthAb]);
+
+            var lineScale = d3.svg.line()
+                .interpolate("basis")
+                .x(function(d, i){return xScale(i);})
+                .y(function(d, i){return yScale(d.y);});
+
+            chart.selectAll(".loading-text,.error-text")
+                .attr("fill-opacity", 1)
+                .transition().duration(tweenDuration)
+                .attr("fill-opacity", 0)
+                .remove();
+            if(data.data.length <= 0){
+                var errorMsg = "No Data";
+                if("error_msg" in data){
+                    errorMsg = data.error_msg;
+                }
+                chart.append("text")
+                    .attr("fill-opacity", 0)
+                    .transition().duration(tweenDuration)
+                    .attr("fill-opacity", 1)
+                    .attr("class", "error-text")
+                    .attr("text-anchor", "middle")
+                    .attr("x", "50%")
+                    .attr("y", "50%")
+                    .attr("font-size", "25")
+                    .text(errorMsg);
+                return;
+            }
+
+            var typeLayers = chart.selectAll(".layer").data(
+                data.data, function(d){
+                    return d.type;
+                }
+            );
+
+            typeLayers.enter().append("g")
+                .attr("class", function(d,i){
+                    return "layer " + data.data[i].type;
+                })
+                .attr("fill", function(d,i){return colors(i);})
+                .attr("height", chartHeight);
+
+            var rect = typeLayers.selectAll("path").data(
+                function(d, i){
+                    return data.data;
+                }
+            );
+
+            rect.transition().duration(tweenDuration)
+                .attr("d", function(d){return lineScale(d.values);});
+            
+            rect.enter().append("path")
+                .attr("class", "line")
+                .attr("d", function(d){return lineScale(d.values);})
+                .style("stroke-width", "1px")
+                .style("fill", "none")
+                .style("stroke", function(d, i){return colors(i+1)});
+            
+
+            rect.exit().transition().duration(tweenDuration)
+                .attr("opacity", "0")
                 .remove();
 
             yGrid.tickSize(-chartWidthAb, -chartWidthAb, 0);
@@ -501,8 +628,10 @@
 
         lineCharts.each((function(){
             var chart = d3.select(this);
-            if(chart.classed("line-chart")){
+            if(chart.classed("bar-chart")){
                 createBarChart(chart, chart.classed("proportion-data"));
+            }else if(chart.classed("line-chart")){
+                createLineChart(chart, chart.classed("proportion-data"));
             }else if(chart.classed("pie-chart")){
                 createPieChart(chart);
             }

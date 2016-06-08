@@ -93,7 +93,6 @@
         req.done(function(data){
             $("#progress").slideDown();
             $("#table").slideUp(function(){
-                // alert(JSON.stringify(data["data"]));
                 $("#table_body").empty();
                 $("#title").html(data["title"]);
                 working = true;
