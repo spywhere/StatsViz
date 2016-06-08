@@ -306,12 +306,23 @@
                 }
             );
 
-            typeLayers.enter().append("g")
+            var layer = typeLayers.enter().append("g")
                 .attr("class", function(d,i){
                     return "layer " + data.data[i].type;
                 })
                 .attr("fill", function(d,i){return colors(i);})
                 .attr("height", chartHeight);
+            layer.append("text")
+                .attr("text-anchor", "end")
+                .attr("x", chartWidthAb - 20)
+                .attr("y", function(d, i){return 20+i*15;})
+                .text(function(d, i){return data.data[i].type;});
+            layer.append("circle")
+                .attr("cx", chartWidthAb - 10)
+                .attr("cy", function(d, i){return 15+i*15;})
+                .attr("r", 5)
+                .style("stroke", "white")
+                .style("stroke-width", 2);
 
             var rect = typeLayers.selectAll("path").data(
                 function(d, i){
