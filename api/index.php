@@ -95,6 +95,7 @@ if($model_name){
 
 if(isset($_GET["stats"])){
     $stats_info = get_stats($_GET["stats"]);
+    $stats_type = isset($_GET["type"]) ? $_GET["type"] : "";
     if(!$stats_info){
         echo json_encode(array(
             'key' => array(),
@@ -173,13 +174,14 @@ if(isset($_GET["stats"])){
     }
     $data = array();
     $key = array();
-    if($stats_info['generate_mode'] == "line"){
+    if($stats_info['generate_mode'] == "stack"){
+        $sum = array();
         while($row = $result->fetch_assoc()){
             if(!in_array($row['key'], $key)){
                 $key[] = $row['key'];
             }
             $key_index = array_search($row['key'], $key);
-
+            
             $exists = false;
             $type_data = array('type'=>$row['type'], 'values'=>array());
             foreach ($data as $data_key => $value) {
@@ -192,8 +194,13 @@ if(isset($_GET["stats"])){
 
             while(count($type_data['values']) < $key_index){
                 $type_data['values'][] = array('y'=>0);
+                $sum[] = 0;
             }
             $type_data['values'][$key_index] = array('y'=>floatval($row['value']));
+
+            if($stats_type == "proportion"){
+                $sum[$key_index] += floatval($row['value']);
+            }
 
             if($exists){
                 $data[$data_key] = $type_data;
@@ -206,9 +213,16 @@ if(isset($_GET["stats"])){
             while(count($value['values']) < count($key)){
                 $value['values'][] = array('y'=>0);
             }
+
+            if($stats_type == "proportion"){
+                foreach ($value['values'] as $val_index => $val) {
+                    $value['values'][$val_index]['y'] *= 100 / $sum[$val_index];
+                }
+            }
+
             $data[$data_key] = $value;
         }
-    }else if($stats_info['generate_mode'] == "pie"){
+    }else if($stats_info['generate_mode'] == "proportion"){
         while($row = $result->fetch_assoc()){
             $value = array();
             $data[] = array('type'=>$row['type'],'value'=>$row['value']);

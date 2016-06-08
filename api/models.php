@@ -11,17 +11,17 @@ function determine_request(){
 function get_stats($stat_type){
     if($stat_type == "total-sales"){
         return array(
-            'generate_mode' => 'line',
+            'generate_mode' => 'stack',
             'table' => 'stats',
             'query' => 'DATE_FORMAT(SendDate,\'%e %M %Y\') as `key`, Product as `type`, COUNT(ProductID) as `value`',
             'where' => 'SendDate > DATE_SUB(NOW(), INTERVAL 1 MONTH)',
-            'group' => 'SendDate',
+            'group' => 'Product, SendDate',
             'order' => 'SendDate',
             'debug' => 'IsDebug'
         );
     }else if($stat_type == "buyer-geography"){
         return array(
-            'generate_mode' => 'pie',
+            'generate_mode' => 'proportion',
             'table' => 'stats',
             'query' => 'Geography as `type`, COUNT(ProductID) as `value`',
             'group' => 'Geography',

@@ -8,7 +8,7 @@
 
     var data = {};
 
-    function requestData(name, callback){
+    function requestData(name, type, callback){
         if(name in data){
             if(
                 "generate_mode" in data[name] && 
@@ -43,25 +43,32 @@
             }
             callback(data[name]);
         }else{
+            var chartData = {
+                "stats": name
+            };
+
+            if(type !== undefined && type !== null){
+                chartData["type"] = type;
+            }
+
             $.ajax({
                 "url": api_host,
                 "method": "GET",
                 "dataType": "json",
-                "data": {
-                    "stats": name
-                },
+                "data": chartData,
                 "async": false
             }).done(callback);
         }
     }
 
-    function createLineChart(chart){
+    function createBarChart(chart, proportion){
         console.log("line chart: " + chart.attr("name"));
 
         var jChart = $("[name='"+chart.attr("name")+"']");
         var chartWidthAb = parseInt(jChart.css("width"));
         var chartHeight = parseInt(jChart.css("height"));
         var chartOffset = 15;
+        var chartType = proportion ? "proportion" : null;
 
         chart.append("text")
             .attr("class", "loading-text")
@@ -205,12 +212,12 @@
         }
 
         setTimeout(function(){
-            requestData(chart.attr("name"), function(data){
+            requestData(chart.attr("name"), chartType, function(data){
                 update(data);
             });
         }, 500);
         setInterval(function(){
-            requestData(chart.attr("name"), function(data){
+            requestData(chart.attr("name"), chartType, function(data){
                 update(data);
             });
         }, updateInterval);
@@ -478,12 +485,12 @@
         }
 
         setTimeout(function(){
-            requestData(chart.attr("name"), function(data){
+            requestData(chart.attr("name"), null, function(data){
                 update(data);
             });
         }, 500);
         setInterval(function(){
-            requestData(chart.attr("name"), function(data){
+            requestData(chart.attr("name"), null, function(data){
                 update(data);
             });
         }, updateInterval);
@@ -495,7 +502,7 @@
         lineCharts.each((function(){
             var chart = d3.select(this);
             if(chart.classed("line-chart")){
-                createLineChart(chart);
+                createBarChart(chart, chart.classed("proportion-data"));
             }else if(chart.classed("pie-chart")){
                 createPieChart(chart);
             }
