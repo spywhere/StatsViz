@@ -184,6 +184,9 @@ if(isset($_GET["stats"])){
             
             $exists = false;
             $type_data = array('type'=>$row['type'], 'values'=>array());
+            if($row['type'] == NULL){
+                continue;
+            }
             foreach ($data as $data_key => $value) {
                 if($value['type'] == $row['type']){
                     $type_data = $value;
