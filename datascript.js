@@ -2,7 +2,7 @@
     "use strict";
     var api_host = "api/";
 
-    var colors = d3.scale.category20c();
+    var colors = d3.scale.category20();
     var tweenDuration = 500;
     var updateInterval = 30000;
 
@@ -102,14 +102,15 @@
                 .domain([0, yMax])
                 .range([chartHeight, 0]);
 
+            var scaleFormat = d3.format(proportion ? "%" : "s");
             var yGrid = d3.svg.axis()
                 .scale(yScale)
                 .ticks(8)
                 .orient("left")
                 .tickSize(-chartWidthAb, -chartWidthAb, 0)
                 .tickSubdivide(1)
-                .tickPadding(-25)
-                .tickFormat(function(d){return d;});
+                .tickPadding(-30)
+                .tickFormat(function(d){return scaleFormat(proportion ? d / 100 : d);});
 
             var xScale = d3.scale.ordinal()
                 .domain(d3.range(data.key.length))
@@ -259,14 +260,15 @@
                 .domain([0, yMax])
                 .range([chartHeight, 0]);
 
+            var scaleFormat = d3.format(proportion ? "%" : "s");
             var yGrid = d3.svg.axis()
                 .scale(yScale)
                 .ticks(8)
                 .orient("left")
                 .tickSize(-chartWidthAb, -chartWidthAb, 0)
                 .tickSubdivide(1)
-                .tickPadding(-25)
-                .tickFormat(function(d){return d;});
+                .tickPadding(-30)
+                .tickFormat(function(d){return scaleFormat(proportion ? d / 100 : d);});
 
             var xScale = d3.scale.ordinal()
                 .domain(d3.range(data.key.length))
