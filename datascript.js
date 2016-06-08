@@ -104,7 +104,7 @@
 
             var yGrid = d3.svg.axis()
                 .scale(yScale)
-                .ticks(4)
+                .ticks(8)
                 .orient("left")
                 .tickSize(-chartWidthAb, -chartWidthAb, 0)
                 .tickSubdivide(1)
@@ -261,7 +261,7 @@
 
             var yGrid = d3.svg.axis()
                 .scale(yScale)
-                .ticks(4)
+                .ticks(8)
                 .orient("left")
                 .tickSize(-chartWidthAb, -chartWidthAb, 0)
                 .tickSubdivide(1)
