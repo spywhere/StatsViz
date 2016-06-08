@@ -14,10 +14,6 @@
     fill: #999;
 }
 
-.line-chart .y-grid path {
-    display: none;
-}
-
-.line-chart .y-grid line {
+.y-grid line {
     stroke: #ccc;
 }
