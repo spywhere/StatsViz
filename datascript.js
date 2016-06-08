@@ -338,7 +338,7 @@
                 .attr("d", function(d){return lineScale(d.values);})
                 .style("stroke-width", "1px")
                 .style("fill", "none")
-                .style("stroke", function(d, i){return colors(i+1)});
+                .style("stroke", function(d, i){return colors(i)});
             
 
             rect.exit().transition().duration(tweenDuration)
