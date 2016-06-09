@@ -314,17 +314,38 @@
                 })
                 .attr("fill", function(d,i){return colors(i);})
                 .attr("height", chartHeight);
-            layer.append("text")
+            var legend = layer.append("g")
+                .attr("class", "legend");
+            legend.append("rect")
+                .attr("x", chartWidthAb - 100)
+                .attr("y", function(d, i){return 8+i*15;})
+                .attr("width", 100)
+                .attr("height", 15)
+                .attr("fill", "rgba(0,0,0,0.001)");
+            legend.on("mouseover", function(){
+                    d3.selectAll(".legend")
+                        .transition()
+                        .attr("opacity", 0);
+                })
+                .on("mouseout", function(){
+                    d3.selectAll(".legend")
+                        .transition()
+                        .attr("opacity", 1);
+                });
+            legend.append("text")
                 .attr("text-anchor", "end")
                 .attr("x", chartWidthAb - 20)
                 .attr("y", function(d, i){return 20+i*15;})
                 .text(function(d, i){return data.data[i].type;});
-            layer.append("circle")
+            legend.append("circle")
                 .attr("cx", chartWidthAb - 10)
                 .attr("cy", function(d, i){return 15+i*15;})
                 .attr("r", 5)
                 .style("stroke", "white")
                 .style("stroke-width", 2);
+            legend.attr("opacity", 0)
+                .transition()
+                .attr("opacity", 1);
 
             var rect = typeLayers.selectAll("path").data(
                 function(d, i){
