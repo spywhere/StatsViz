@@ -38,18 +38,19 @@ This function use for query and prepare the data for visualizations.
 
 This function will recieve `stat_type` from the `name` attribute (details on
 *Visualizations* section) and should returns an array contains the following
-data structure...
+data structure (returns `NULL` if there is no matched for `stat_type`)...
 
-- `generate_mode` A visualization style for this query.  
-Can be either `line` or `pie`.
+- `generate_mode` A data generation mode.  
+Can be either `stack` (for stacked line or stacked bar charts) or `proportion`
+(for pie charts).
 - `table` A database table used in a query.
 - `query` A table's fields as in SQL's `SELECT`. The field name should match the
 visualization require fields
-  - For `line` chart
+  - For `stack` data generation
     - `key` A title for each group along the X-axis
     - `type` A group name
     - `value` An arbitrary number for the chart
-  - For `pie` chart
+  - For `proportion` data generation
     - `type` A group name
     - `value` An arbitrary number for the chart (% will be automatically
     calculated)
@@ -72,24 +73,35 @@ database. In addition to that, this function also served as a request filter in
 which filter out any invalid or malformed request sent to the API.
 
 This function will recieve a model name (from `determine_request`) and should
-returns a table schema which consists of the following structure...
+returns
+
+- An array of all table schemas with its key as a model name **if a model name
+is omitted** 
+- A table schema according to the specified model name or `NULL` if no schema is
+matched
+
+A table schema consists of the following structure...
 
 - `name` A name in which will show as a schema name in the list view.
 - `schema` An object represents a table metadata in which each key is the field
 name and its value is a field structure as follows...
   - `name` A name in which the request must send as (all spaces will be
   trimmed).
-  - `alias` An array of names which will use as an alias to name (no space will
-  be trimmed).
-  - `skip` A boolean specify if the filter will be hidden or not.
-  - `key` A boolean specify if the field will be use as a primary key.
-  - `pattern` A regular expression to validate the value (this will reject the
-  request if the value does not match the expression).
-  - `cast` Cast the value as a signed number (this also enable `reverse_order`).
-  - `max` A maximum size of the value (as `VARCHAR`).
-  - `reverse_order` Sort the filter in reverse order.
-  - `date` A boolean specify if the field will be use as a date value.
-  - `time` A boolean specify if the field will be use as a time value.
+  - `alias` (optional) An array of names which will use as an alias to name (no
+  space will be trimmed).
+  - `skip` (optional) A boolean specify if the filter will be hidden or not.
+  - `key` (optional) A boolean specify if the field will be use as a primary key.
+  - `pattern` (optional) A regular expression to validate the value (this will
+  reject the request if the value does not match the expression).
+  - `cast` (optional) Cast the value as a signed number (this also enable
+  `reverse_order`).
+  - `max` (optional) A maximum size of the value (as `VARCHAR`). Default is 30.
+  - `reverse_order` (optional) A boolean specify if the filter should be sorted
+  in a reverse order.
+  - `date` (optional) A boolean specify if the field will be use as a date
+  value. Cannot be use with `time`.
+  - `time` (optional) A boolean specify if the field will be use as a time
+  value. Cannot be use with `date`.
 
 ## Visualizations
 In order to create a visualization, all models and its structure must be

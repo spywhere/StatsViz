@@ -236,7 +236,7 @@ if(isset($_GET["stats"])){
     exit();
 }
 
-if(isset($_GET["database"])){
+if(isset($_GET[$database_url_field])){
     $table_codes = array();
     foreach (get_models() as $model_name => $model) {
         if($db->query("DESCRIBE ".$model_name)){

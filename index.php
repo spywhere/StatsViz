@@ -1,7 +1,7 @@
 <?php
 include("config.php");
 
-$key_name = isset($_GET["show"]) ? "records_title" : "visualizations_title";
+$key_name = isset($_GET["show"]) ? "list_view_title" : "visualizations_title";
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +48,7 @@ $key_name = isset($_GET["show"]) ? "records_title" : "visualizations_title";
     </div>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <?php
-if(isset($_GET["show"])){
+if(isset($_GET[$list_view_field])){
 ?>
     <script src="script.js"></script>
 <?php
